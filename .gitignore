@@ -1,3 +1,0 @@
-# Ignore generated cache files — they are runtime artefacts and must not
-# be included in plugin submissions to WordPress.org.
-cache/*.html

@@ -1,9 +1,9 @@
-=== Samrat Website Cache ===
+=== Cachelume ===
 Contributors: emily50
-Donate link: https://samrat-personal-portfolio.netlify.app/
+Donate link: https://samratemily.netlify.app/
 Tags: cache, performance, speed, optimization, minify
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 7.1
 Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -13,23 +13,23 @@ A powerful and lightweight caching plugin for WordPress that improves website pe
 
 == Description ==
 
-**Samrat Website Cache** is a simple yet powerful caching solution designed to dramatically improve your WordPress website's loading speed. By caching your pages as static HTML files and optionally minifying your code, visitors experience lightning-fast page loads.
+**Cachelume** is a simple yet powerful caching solution designed to dramatically improve your WordPress website's loading speed. By caching your pages as static HTML files and optionally minifying your code, visitors experience lightning-fast page loads.
 
 = Key Features =
 
 * **Page Caching** - Stores rendered pages as static HTML files for instant delivery
 * **HTML Minification** - Removes unnecessary whitespace and comments from HTML
 * **CSS Minification** - Minifies inline CSS styles for smaller file sizes
-* **JavaScript Minification** - Minifies inline JavaScript code
+* **JavaScript Minification** - Safely trims whitespace in inline JavaScript
 * **Logged-in User Cache** - Optional caching for authenticated users
 * **Cache Expiry Control** - Set custom cache lifetime from 1 hour to 1 week
 * **Page Exclusions** - Exclude specific URLs from caching (supports wildcards)
 * **Cookie Exclusions** - Skip caching when specific cookies are present
 * **One-Click Cache Clear** - Clear all cache instantly from admin bar or settings
 * **WooCommerce Compatible** - Pre-configured exclusions for cart, checkout, and account pages
-* **Auto-Clear Cache** - Automatically clears cache when content is updated
+* **Auto-Clear Cache** - Automatically clears cache when content or comments change
 
-= Why Choose Samrat Website Cache? =
+= Why Choose Cachelume? =
 
 1. **Lightweight** - No bloated features, just essential caching that works
 2. **Easy Setup** - Works out of the box with sensible defaults
@@ -49,9 +49,9 @@ A powerful and lightweight caching plugin for WordPress that improves website pe
 = Automatic Installation =
 
 1. Go to Plugins > Add New in your WordPress admin
-2. Search for "Samrat Website Cache"
+2. Search for "Cachelume"
 3. Click "Install Now" and then "Activate"
-4. Go to Website Cache > Settings to configure
+4. Go to Cachelume > Settings to configure
 
 = Manual Installation =
 
@@ -59,14 +59,14 @@ A powerful and lightweight caching plugin for WordPress that improves website pe
 2. Go to Plugins > Add New > Upload Plugin
 3. Upload the zip file and click "Install Now"
 4. Activate the plugin
-5. Go to Website Cache > Settings to configure
+5. Go to Cachelume > Settings to configure
 
 = FTP Installation =
 
 1. Download and extract the plugin zip file
-2. Upload the `samrat-website-cache` folder to `/wp-content/plugins/`
+2. Upload the `cachelume` folder to `/wp-content/plugins/`
 3. Activate the plugin through the Plugins menu
-4. Go to Website Cache > Settings to configure
+4. Go to Cachelume > Settings to configure
 
 == Frequently Asked Questions ==
 
@@ -87,7 +87,7 @@ You can clear the cache in several ways:
 
 = Does this work with other caching plugins? =
 
-We recommend using only one page caching plugin at a time to avoid conflicts. Disable other caching plugins before activating Samrat Website Cache.
+We recommend using only one page caching plugin at a time to avoid conflicts. Disable other caching plugins before activating Cachelume.
 
 = Is the minification safe? =
 
@@ -95,7 +95,7 @@ The minification is designed to be safe and only removes unnecessary whitespace 
 
 = How do I exclude a page from caching? =
 
-Go to Website Cache > Settings, find the "Exclude Pages" field, and add the URL path (one per line). For example:
+Go to Cachelume > Settings, find the "Exclude Pages" field, and add the URL path (one per line). For example:
 * `/contact/` - Excludes the contact page
 * `/api/*` - Excludes all URLs starting with /api/
 
@@ -106,9 +106,9 @@ The plugin works on multisite installations, but each site needs to be configure
 = How can I verify the cache is working? =
 
 View the page source of a cached page. At the bottom, you'll see a comment like:
-`<!-- Cached by Samrat Website Cache on 2024-01-15 10:30:00 -->`
+`<!-- Cached by Cachelume on 2024-01-15 10:30:00 -->`
 
-You can also check the response headers for `X-Samrat-Cache: HIT`.
+You can also check the response headers for `X-Cachelume-Cache: HIT`.
 
 == Screenshots ==
 
@@ -136,11 +136,11 @@ You can also check the response headers for `X-Samrat-Cache: HIT`.
 == Upgrade Notice ==
 
 = 1.0.0 =
-Initial release of Samrat Website Cache. Install to improve your website's performance!
+Initial release of Cachelume. Install to improve your website's performance!
 
 == External Services ==
 
-This plugin does **not** connect to any external APIs or third-party services. All caching is performed locally on your server — rendered pages are saved as static HTML files inside the plugin's own `cache/` directory and served directly from there.
+This plugin does **not** connect to any external APIs or third-party services. All caching is performed locally on your server — rendered pages are saved as static HTML files in the `wp-content/cache/cachelume/` directory and served directly from there.
 
 **WordPress REST API discovery links in cached content**
 

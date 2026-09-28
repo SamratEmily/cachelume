@@ -1,26 +1,26 @@
-# Samrat Website Cache
+# Cachelume
 
 [![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-blue.svg)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
 [![License](https://img.shields.io/badge/License-GPLv2-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
-[![Version](https://img.shields.io/badge/Version-1.0.0-orange.svg)](https://github.com/samrathossen/samrat-website-cache)
+[![Version](https://img.shields.io/badge/Version-1.0.0-orange.svg)](https://github.com/samrathossen/cachelume)
 
 A powerful and lightweight caching plugin for WordPress that dramatically improves website performance through intelligent page caching and code minification.
 
-![Samrat Website Cache Banner](assets/images/banner-772x250.png)
+![Cachelume Banner](assets/images/banner-772x250.png)
 
 ## ✨ Features
 
 ### 🚀 Page Caching
 - Stores rendered pages as static HTML files
-- Serves cached content before WordPress loads for maximum speed
+- Serves cached content early, before the theme and database queries run
 - Configurable cache expiry from 1 hour to 1 week
 - Automatic cache invalidation on content updates
 
 ### 📦 Minification
 - **HTML Minification** - Removes unnecessary whitespace and comments
 - **CSS Minification** - Minifies inline `<style>` blocks
-- **JavaScript Minification** - Minifies inline `<script>` blocks
+- **JavaScript Minification** - Trims whitespace in inline `<script>` blocks (line breaks and comments are kept so scripts can't break)
 - Safe minification that preserves `<pre>`, `<code>`, and `<textarea>` content
 
 ### ⚙️ Smart Exclusions
@@ -34,6 +34,9 @@ A powerful and lightweight caching plugin for WordPress that dramatically improv
   - 404 pages
   - Preview pages
   - Password-protected posts
+  - Visitors who have commented or unlocked a password-protected post
+  - Pages that define `DONOTCACHEPAGE`
+  - URLs with query parameters other than WordPress core query vars (tracking parameters such as `utm_*` and `fbclid` are ignored)
 
 ### 🛒 WooCommerce Compatible
 Pre-configured exclusions for:
@@ -58,16 +61,16 @@ Pre-configured exclusions for:
 ### From WordPress Admin
 
 1. Go to **Plugins → Add New**
-2. Search for "Samrat Website Cache"
+2. Search for "Cachelume"
 3. Click **Install Now** then **Activate**
-4. Navigate to **Website Cache → Settings** to configure
+4. Navigate to **Cachelume → Settings** to configure
 
 ### Manual Installation
 
 1. Download the latest release
-2. Upload the `samrat-website-cache` folder to `/wp-content/plugins/`
+2. Upload the `cachelume` folder to `/wp-content/plugins/`
 3. Activate through the **Plugins** menu
-4. Configure at **Website Cache → Settings**
+4. Configure at **Cachelume → Settings**
 
 ## ⚡ Quick Start
 
@@ -125,17 +128,17 @@ custom_session_cookie
 ### Method 1: View Page Source
 Look for this comment at the bottom of your HTML:
 ```html
-<!-- Cached by Samrat Website Cache on 2024-01-15 10:30:00 -->
+<!-- Cached by Cachelume on 2024-01-15 10:30:00 -->
 ```
 
 ### Method 2: Check Response Headers
 ```
-X-Samrat-Cache: HIT
-X-Samrat-Cache-Time: 2024-01-15 10:30:00
+X-Cachelume-Cache: HIT
+X-Cachelume-Cache-Time: 2024-01-15 10:30:00
 ```
 
 ### Method 3: Admin Dashboard
-Visit **Website Cache → Settings** to see:
+Visit **Cachelume → Settings** to see:
 - Number of cached pages
 - Total cache size
 - Cache status (Active/Inactive)
@@ -145,11 +148,13 @@ Visit **Website Cache → Settings** to see:
 ### Manual Clear
 1. **Settings Page** - Click "Clear All Cache" button
 2. **Admin Bar** - Click "Cache → Clear Cache"
-3. **Clear Cache Page** - Visit Website Cache → Clear Cache
+3. **Clear Cache Page** - Visit Cachelume → Clear Cache
 
 ### Automatic Clear
 Cache automatically clears when:
-- Posts/pages are updated or deleted
+- Posts/pages are updated, unpublished, trashed or deleted
+- Comments are approved, edited, unapproved or removed
+- Plugin settings are changed
 - Theme is changed
 - Plugins are activated/deactivated
 - WordPress core is updated
@@ -158,45 +163,22 @@ Cache automatically clears when:
 ## 📁 File Structure
 
 ```
-samrat-website-cache/
+cachelume/
 ├── assets/
 │   ├── css/
 │   │   └── admin.css          # Admin styles
 │   └── js/
 │       └── admin.js           # Admin JavaScript
-├── cache/                      # Cached HTML files
 ├── includes/
 │   ├── AdminMenu.php          # Admin menu & settings
 │   └── CacheHandler.php       # Core caching logic
 ├── README.md                   # This file
 ├── readme.txt                  # WordPress.org readme
-└── samrat-website-cache.php   # Main plugin file
+├── uninstall.php               # Removes settings and cache on delete
+└── cachelume.php               # Main plugin file
 ```
 
-## 🔌 Hooks & Filters
-
-### Actions
-
-```php
-// Fires after cache is cleared
-do_action('samrat_cache_cleared');
-
-// Fires after a single page cache is cleared
-do_action('samrat_cache_page_cleared', $post_id);
-```
-
-### Filters
-
-```php
-// Modify cache settings
-$settings = apply_filters('samrat_cache_settings', $settings);
-
-// Modify excluded pages
-$excluded = apply_filters('samrat_cache_excluded_pages', $excluded_pages);
-
-// Modify cache key
-$cache_key = apply_filters('samrat_cache_key', $cache_key, $url);
-```
+Cached pages are stored outside the plugin in `wp-content/cache/cachelume/`.
 
 ## 🐛 Troubleshooting
 

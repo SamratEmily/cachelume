@@ -1,42 +1,42 @@
 /**
- * Samrat Website Cache - Admin Styles
+ * Cachelume - Admin Styles
  *
- * @package Samrat_Website_Cache
+ * @package Cachelume
  */
 
 /* =====================================================
    CSS Variables
    ===================================================== */
 :root {
-    --swc-primary: #6366f1;
-    --swc-primary-dark: #4f46e5;
-    --swc-primary-light: #818cf8;
-    --swc-secondary: #10b981;
-    --swc-warning: #f59e0b;
-    --swc-danger: #ef4444;
-    --swc-dark: #1f2937;
-    --swc-gray-900: #111827;
-    --swc-gray-800: #1f2937;
-    --swc-gray-700: #374151;
-    --swc-gray-600: #4b5563;
-    --swc-gray-500: #6b7280;
-    --swc-gray-400: #9ca3af;
-    --swc-gray-300: #d1d5db;
-    --swc-gray-200: #e5e7eb;
-    --swc-gray-100: #f3f4f6;
-    --swc-gray-50: #f9fafb;
-    --swc-white: #ffffff;
-    --swc-radius: 12px;
-    --swc-radius-sm: 8px;
-    --swc-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --swc-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --swc-transition: all 0.3s ease;
+    --cachelume-primary: #6366f1;
+    --cachelume-primary-dark: #4f46e5;
+    --cachelume-primary-light: #818cf8;
+    --cachelume-secondary: #10b981;
+    --cachelume-warning: #f59e0b;
+    --cachelume-danger: #ef4444;
+    --cachelume-dark: #1f2937;
+    --cachelume-gray-900: #111827;
+    --cachelume-gray-800: #1f2937;
+    --cachelume-gray-700: #374151;
+    --cachelume-gray-600: #4b5563;
+    --cachelume-gray-500: #6b7280;
+    --cachelume-gray-400: #9ca3af;
+    --cachelume-gray-300: #d1d5db;
+    --cachelume-gray-200: #e5e7eb;
+    --cachelume-gray-100: #f3f4f6;
+    --cachelume-gray-50: #f9fafb;
+    --cachelume-white: #ffffff;
+    --cachelume-radius: 12px;
+    --cachelume-radius-sm: 8px;
+    --cachelume-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --cachelume-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --cachelume-transition: all 0.3s ease;
 }
 
 /* =====================================================
    Base Styles
    ===================================================== */
-.samrat-cache-wrap {
+.cachelume-cache-wrap {
     margin: 20px 20px 20px 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
@@ -44,20 +44,20 @@
 /* =====================================================
    Header
    ===================================================== */
-.samrat-cache-header {
-    background: linear-gradient(135deg, var(--swc-primary) 0%, var(--swc-primary-dark) 100%);
-    border-radius: var(--swc-radius);
+.cachelume-cache-header {
+    background: linear-gradient(135deg, var(--cachelume-primary) 0%, var(--cachelume-primary-dark) 100%);
+    border-radius: var(--cachelume-radius);
     padding: 30px 40px;
     margin-bottom: 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: var(--swc-shadow-lg);
+    box-shadow: var(--cachelume-shadow-lg);
     position: relative;
     overflow: hidden;
 }
 
-.samrat-cache-header::before {
+.cachelume-cache-header::before {
     content: '';
     position: absolute;
     top: -50%;
@@ -68,7 +68,7 @@
     border-radius: 50%;
 }
 
-.samrat-cache-header::after {
+.cachelume-cache-header::after {
     content: '';
     position: absolute;
     bottom: -60%;
@@ -79,13 +79,13 @@
     border-radius: 50%;
 }
 
-.samrat-cache-header-content {
+.cachelume-cache-header-content {
     position: relative;
     z-index: 1;
 }
 
-.samrat-cache-header h1 {
-    color: var(--swc-white);
+.cachelume-cache-header h1 {
+    color: var(--cachelume-white);
     font-size: 28px;
     font-weight: 700;
     margin: 0 0 8px 0;
@@ -94,21 +94,21 @@
     gap: 12px;
 }
 
-.samrat-cache-header h1 .dashicons {
+.cachelume-cache-header h1 .dashicons {
     font-size: 32px;
     width: 32px;
     height: 32px;
 }
 
-.samrat-cache-tagline {
+.cachelume-cache-tagline {
     color: rgba(255, 255, 255, 0.85);
     font-size: 15px;
     margin: 0;
 }
 
-.samrat-cache-version {
+.cachelume-cache-version {
     background: rgba(255, 255, 255, 0.2);
-    color: var(--swc-white);
+    color: var(--cachelume-white);
     padding: 6px 16px;
     border-radius: 20px;
     font-size: 13px;
@@ -120,7 +120,7 @@
 /* =====================================================
    Stats Grid
    ===================================================== */
-.samrat-cache-stats-grid {
+.cachelume-cache-stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
@@ -128,38 +128,38 @@
 }
 
 @media (max-width: 1200px) {
-    .samrat-cache-stats-grid {
+    .cachelume-cache-stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 600px) {
-    .samrat-cache-stats-grid {
+    .cachelume-cache-stats-grid {
         grid-template-columns: 1fr;
     }
 }
 
-.samrat-cache-stat-card {
-    background: var(--swc-white);
-    border-radius: var(--swc-radius);
+.cachelume-cache-stat-card {
+    background: var(--cachelume-white);
+    border-radius: var(--cachelume-radius);
     padding: 24px;
     display: flex;
     align-items: center;
     gap: 16px;
-    box-shadow: var(--swc-shadow);
-    transition: var(--swc-transition);
-    border: 1px solid var(--swc-gray-200);
+    box-shadow: var(--cachelume-shadow);
+    transition: var(--cachelume-transition);
+    border: 1px solid var(--cachelume-gray-200);
 }
 
-.samrat-cache-stat-card:hover {
+.cachelume-cache-stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--swc-shadow-lg);
+    box-shadow: var(--cachelume-shadow-lg);
 }
 
 .stat-icon {
     width: 56px;
     height: 56px;
-    border-radius: var(--swc-radius-sm);
+    border-radius: var(--cachelume-radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -170,7 +170,7 @@
     font-size: 28px;
     width: 28px;
     height: 28px;
-    color: var(--swc-white);
+    color: var(--cachelume-white);
 }
 
 .stat-icon.cached {
@@ -182,11 +182,11 @@
 }
 
 .stat-icon.status.active {
-    background: linear-gradient(135deg, var(--swc-secondary), #059669);
+    background: linear-gradient(135deg, var(--cachelume-secondary), #059669);
 }
 
 .stat-icon.status.inactive {
-    background: linear-gradient(135deg, var(--swc-gray-400), var(--swc-gray-500));
+    background: linear-gradient(135deg, var(--cachelume-gray-400), var(--cachelume-gray-500));
 }
 
 .stat-content {
@@ -198,110 +198,110 @@
 .stat-value {
     font-size: 24px;
     font-weight: 700;
-    color: var(--swc-gray-900);
+    color: var(--cachelume-gray-900);
     line-height: 1.2;
 }
 
 .stat-label {
     font-size: 14px;
-    color: var(--swc-gray-500);
+    color: var(--cachelume-gray-500);
 }
 
 /* Clear Cache Card */
-.samrat-cache-clear-card {
-    background: linear-gradient(135deg, var(--swc-danger) 0%, #dc2626 100%);
+.cachelume-cache-clear-card {
+    background: linear-gradient(135deg, var(--cachelume-danger) 0%, #dc2626 100%);
     border: none;
     justify-content: center;
 }
 
-.samrat-clear-cache-btn {
+.cachelume-clear-cache-btn {
     background: rgba(255, 255, 255, 0.2);
     border: 2px solid rgba(255, 255, 255, 0.3);
-    color: var(--swc-white);
+    color: var(--cachelume-white);
     padding: 14px 28px;
-    border-radius: var(--swc-radius-sm);
+    border-radius: var(--cachelume-radius-sm);
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: var(--swc-transition);
+    transition: var(--cachelume-transition);
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.samrat-clear-cache-btn:hover {
+.cachelume-clear-cache-btn:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: scale(1.02);
 }
 
-.samrat-clear-cache-btn .dashicons {
+.cachelume-clear-cache-btn .dashicons {
     font-size: 20px;
     width: 20px;
     height: 20px;
 }
 
-.samrat-clear-cache-btn.loading {
+.cachelume-clear-cache-btn.loading {
     opacity: 0.7;
     pointer-events: none;
 }
 
-.samrat-clear-cache-btn.success {
-    background: var(--swc-secondary);
-    border-color: var(--swc-secondary);
+.cachelume-clear-cache-btn.success {
+    background: var(--cachelume-secondary);
+    border-color: var(--cachelume-secondary);
 }
 
 /* =====================================================
    Settings Container
    ===================================================== */
-.samrat-cache-settings-container {
-    background: var(--swc-white);
-    border-radius: var(--swc-radius);
+.cachelume-cache-settings-container {
+    background: var(--cachelume-white);
+    border-radius: var(--cachelume-radius);
     padding: 32px;
-    box-shadow: var(--swc-shadow);
-    border: 1px solid var(--swc-gray-200);
+    box-shadow: var(--cachelume-shadow);
+    border: 1px solid var(--cachelume-gray-200);
 }
 
-.samrat-cache-form h2 {
-    color: var(--swc-gray-900);
+.cachelume-cache-form h2 {
+    color: var(--cachelume-gray-900);
     font-size: 20px;
     font-weight: 600;
     padding-bottom: 16px;
-    border-bottom: 2px solid var(--swc-gray-100);
+    border-bottom: 2px solid var(--cachelume-gray-100);
     margin: 32px 0 20px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.samrat-cache-form h2:first-of-type {
+.cachelume-cache-form h2:first-of-type {
     margin-top: 0;
 }
 
-.samrat-cache-form h2::before {
+.cachelume-cache-form h2::before {
     content: '';
     width: 4px;
     height: 24px;
-    background: var(--swc-primary);
+    background: var(--cachelume-primary);
     border-radius: 2px;
 }
 
-.samrat-cache-form .form-table {
+.cachelume-cache-form .form-table {
     margin-top: 0;
 }
 
-.samrat-cache-form .form-table th {
+.cachelume-cache-form .form-table th {
     padding: 20px 20px 20px 0;
     font-weight: 500;
-    color: var(--swc-gray-700);
+    color: var(--cachelume-gray-700);
     width: 250px;
 }
 
-.samrat-cache-form .form-table td {
+.cachelume-cache-form .form-table td {
     padding: 20px 0;
 }
 
-.samrat-cache-form .form-table td p.description {
-    color: var(--swc-gray-500);
+.cachelume-cache-form .form-table td p.description {
+    color: var(--cachelume-gray-500);
     font-size: 13px;
     margin-top: 8px;
 }
@@ -309,120 +309,120 @@
 /* =====================================================
    Toggle Switch
    ===================================================== */
-.samrat-toggle-switch {
+.cachelume-toggle-switch {
     position: relative;
     display: inline-block;
     width: 52px;
     height: 28px;
 }
 
-.samrat-toggle-switch input {
+.cachelume-toggle-switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
-.samrat-toggle-slider {
+.cachelume-toggle-slider {
     position: absolute;
     cursor: pointer;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--swc-gray-300);
-    transition: var(--swc-transition);
+    background-color: var(--cachelume-gray-300);
+    transition: var(--cachelume-transition);
     border-radius: 28px;
 }
 
-.samrat-toggle-slider::before {
+.cachelume-toggle-slider::before {
     position: absolute;
     content: "";
     height: 22px;
     width: 22px;
     left: 3px;
     bottom: 3px;
-    background-color: var(--swc-white);
-    transition: var(--swc-transition);
+    background-color: var(--cachelume-white);
+    transition: var(--cachelume-transition);
     border-radius: 50%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.samrat-toggle-switch input:checked + .samrat-toggle-slider {
-    background: linear-gradient(135deg, var(--swc-primary), var(--swc-primary-dark));
+.cachelume-toggle-switch input:checked + .cachelume-toggle-slider {
+    background: linear-gradient(135deg, var(--cachelume-primary), var(--cachelume-primary-dark));
 }
 
-.samrat-toggle-switch input:checked + .samrat-toggle-slider::before {
+.cachelume-toggle-switch input:checked + .cachelume-toggle-slider::before {
     transform: translateX(24px);
 }
 
-.samrat-toggle-switch input:focus + .samrat-toggle-slider {
+.cachelume-toggle-switch input:focus + .cachelume-toggle-slider {
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 /* =====================================================
    Select Field
    ===================================================== */
-.samrat-select {
+.cachelume-select {
     min-width: 200px;
     padding: 10px 16px;
-    border: 2px solid var(--swc-gray-200);
-    border-radius: var(--swc-radius-sm);
+    border: 2px solid var(--cachelume-gray-200);
+    border-radius: var(--cachelume-radius-sm);
     font-size: 14px;
-    color: var(--swc-gray-700);
-    background: var(--swc-white);
+    color: var(--cachelume-gray-700);
+    background: var(--cachelume-white);
     cursor: pointer;
-    transition: var(--swc-transition);
+    transition: var(--cachelume-transition);
 }
 
-.samrat-select:hover {
-    border-color: var(--swc-gray-300);
+.cachelume-select:hover {
+    border-color: var(--cachelume-gray-300);
 }
 
-.samrat-select:focus {
+.cachelume-select:focus {
     outline: none;
-    border-color: var(--swc-primary);
+    border-color: var(--cachelume-primary);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 /* =====================================================
    Textarea
    ===================================================== */
-.samrat-cache-form textarea.large-text {
-    border: 2px solid var(--swc-gray-200);
-    border-radius: var(--swc-radius-sm);
+.cachelume-cache-form textarea.large-text {
+    border: 2px solid var(--cachelume-gray-200);
+    border-radius: var(--cachelume-radius-sm);
     padding: 12px;
     font-size: 14px;
-    transition: var(--swc-transition);
+    transition: var(--cachelume-transition);
 }
 
-.samrat-cache-form textarea.large-text:focus {
+.cachelume-cache-form textarea.large-text:focus {
     outline: none;
-    border-color: var(--swc-primary);
+    border-color: var(--cachelume-primary);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 /* =====================================================
    Save Button
    ===================================================== */
-.samrat-save-btn {
-    background: linear-gradient(135deg, var(--swc-primary), var(--swc-primary-dark)) !important;
+.cachelume-save-btn {
+    background: linear-gradient(135deg, var(--cachelume-primary), var(--cachelume-primary-dark)) !important;
     border: none !important;
     padding: 12px 32px !important;
     font-size: 15px !important;
     font-weight: 600 !important;
-    border-radius: var(--swc-radius-sm) !important;
+    border-radius: var(--cachelume-radius-sm) !important;
     height: auto !important;
     line-height: 1.4 !important;
     box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
-    transition: var(--swc-transition) !important;
+    transition: var(--cachelume-transition) !important;
 }
 
-.samrat-save-btn:hover {
+.cachelume-save-btn:hover {
     transform: translateY(-2px) !important;
     box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5) !important;
 }
 
-.samrat-save-btn:focus {
+.cachelume-save-btn:focus {
     outline: none !important;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3), 0 4px 14px rgba(99, 102, 241, 0.4) !important;
 }
@@ -430,33 +430,33 @@
 /* =====================================================
    Clear Cache Page
    ===================================================== */
-.samrat-cache-clear-container {
+.cachelume-cache-clear-container {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 30px;
 }
 
 @media (max-width: 1000px) {
-    .samrat-cache-clear-container {
+    .cachelume-cache-clear-container {
         grid-template-columns: 1fr;
     }
 }
 
 .cache-info-card {
-    background: var(--swc-white);
-    border-radius: var(--swc-radius);
+    background: var(--cachelume-white);
+    border-radius: var(--cachelume-radius);
     padding: 28px;
-    box-shadow: var(--swc-shadow);
-    border: 1px solid var(--swc-gray-200);
+    box-shadow: var(--cachelume-shadow);
+    border: 1px solid var(--cachelume-gray-200);
 }
 
 .cache-info-card h3 {
-    color: var(--swc-gray-900);
+    color: var(--cachelume-gray-900);
     font-size: 18px;
     font-weight: 600;
     margin: 0 0 20px;
     padding-bottom: 12px;
-    border-bottom: 2px solid var(--swc-gray-100);
+    border-bottom: 2px solid var(--cachelume-gray-100);
 }
 
 .cache-info-card ul {
@@ -470,7 +470,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 14px 0;
-    border-bottom: 1px solid var(--swc-gray-100);
+    border-bottom: 1px solid var(--cachelume-gray-100);
 }
 
 .cache-info-card ul li:last-child {
@@ -478,12 +478,12 @@
 }
 
 .cache-info-card .label {
-    color: var(--swc-gray-600);
+    color: var(--cachelume-gray-600);
     font-size: 14px;
 }
 
 .cache-info-card .value {
-    color: var(--swc-gray-900);
+    color: var(--cachelume-gray-900);
     font-weight: 600;
     font-size: 14px;
 }
@@ -491,37 +491,37 @@
 .cache-info-card .value.code {
     font-family: 'Monaco', 'Consolas', monospace;
     font-size: 12px;
-    background: var(--swc-gray-100);
+    background: var(--cachelume-gray-100);
     padding: 4px 10px;
     border-radius: 4px;
 }
 
 /* Clear Action Cards */
-.samrat-cache-clear-actions {
+.cachelume-cache-clear-actions {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
 
 @media (max-width: 768px) {
-    .samrat-cache-clear-actions {
+    .cachelume-cache-clear-actions {
         grid-template-columns: 1fr;
     }
 }
 
 .clear-action-card {
-    background: var(--swc-white);
-    border-radius: var(--swc-radius);
+    background: var(--cachelume-white);
+    border-radius: var(--cachelume-radius);
     padding: 32px;
     text-align: center;
-    box-shadow: var(--swc-shadow);
-    border: 1px solid var(--swc-gray-200);
-    transition: var(--swc-transition);
+    box-shadow: var(--cachelume-shadow);
+    border: 1px solid var(--cachelume-gray-200);
+    transition: var(--cachelume-transition);
 }
 
 .clear-action-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--swc-shadow-lg);
+    box-shadow: var(--cachelume-shadow-lg);
 }
 
 .action-icon {
@@ -532,29 +532,29 @@
     align-items: center;
     justify-content: center;
     margin: 0 auto 20px;
-    background: linear-gradient(135deg, var(--swc-danger), #dc2626);
+    background: linear-gradient(135deg, var(--cachelume-danger), #dc2626);
 }
 
 .action-icon.refresh {
-    background: linear-gradient(135deg, var(--swc-secondary), #059669);
+    background: linear-gradient(135deg, var(--cachelume-secondary), #059669);
 }
 
 .action-icon .dashicons {
     font-size: 32px;
     width: 32px;
     height: 32px;
-    color: var(--swc-white);
+    color: var(--cachelume-white);
 }
 
 .clear-action-card h3 {
-    color: var(--swc-gray-900);
+    color: var(--cachelume-gray-900);
     font-size: 18px;
     font-weight: 600;
     margin: 0 0 12px;
 }
 
 .clear-action-card p {
-    color: var(--swc-gray-500);
+    color: var(--cachelume-gray-500);
     font-size: 14px;
     margin: 0 0 24px;
     line-height: 1.6;
@@ -567,7 +567,7 @@
     padding: 12px 28px !important;
     font-size: 14px !important;
     font-weight: 600 !important;
-    border-radius: var(--swc-radius-sm) !important;
+    border-radius: var(--cachelume-radius-sm) !important;
     height: auto !important;
     line-height: 1.4 !important;
 }
@@ -584,7 +584,7 @@
 
 .status-badge.active {
     background: rgba(16, 185, 129, 0.1);
-    color: var(--swc-secondary);
+    color: var(--cachelume-secondary);
 }
 
 .status-badge .dashicons {
@@ -596,15 +596,15 @@
 /* =====================================================
    Toast Notification
    ===================================================== */
-.samrat-cache-toast {
+.cachelume-cache-toast {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    background: var(--swc-gray-900);
-    color: var(--swc-white);
+    background: var(--cachelume-gray-900);
+    color: var(--cachelume-white);
     padding: 16px 24px;
-    border-radius: var(--swc-radius-sm);
-    box-shadow: var(--swc-shadow-lg);
+    border-radius: var(--cachelume-radius-sm);
+    box-shadow: var(--cachelume-shadow-lg);
     display: flex;
     align-items: center;
     gap: 12px;
@@ -612,27 +612,27 @@
     animation: slideIn 0.3s ease;
 }
 
-.samrat-cache-toast.success {
-    background: var(--swc-secondary);
+.cachelume-cache-toast.success {
+    background: var(--cachelume-secondary);
 }
 
-.samrat-cache-toast.error {
-    background: var(--swc-danger);
+.cachelume-cache-toast.error {
+    background: var(--cachelume-danger);
 }
 
-.samrat-cache-toast .dashicons {
+.cachelume-cache-toast .dashicons {
     font-size: 20px;
     width: 20px;
     height: 20px;
 }
 
-@keyframes samrweca-spin {
+@keyframes cachelume-spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
 
-.samrweca-spin {
-    animation: samrweca-spin 1s linear infinite;
+.cachelume-spin {
+    animation: cachelume-spin 1s linear infinite;
 }
 
 @keyframes slideIn {
@@ -657,18 +657,18 @@
     }
 }
 
-.samrat-cache-toast.hiding {
+.cachelume-cache-toast.hiding {
     animation: slideOut 0.3s ease forwards;
 }
 
 /* =====================================================
    Settings Notices
    ===================================================== */
-.samrat-cache-wrap .notice {
+.cachelume-cache-wrap .notice {
     margin: 0 0 20px;
-    border-radius: var(--swc-radius-sm);
+    border-radius: var(--cachelume-radius-sm);
 }
 
-.samrat-cache-wrap .notice-success {
-    border-left-color: var(--swc-secondary);
+.cachelume-cache-wrap .notice-success {
+    border-left-color: var(--cachelume-secondary);
 }

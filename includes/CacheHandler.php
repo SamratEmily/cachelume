@@ -1,16 +1,16 @@
 <?php
 
 /**
- * Cache Handler Class for Samrat Website Cache
+ * Cache Handler Class for Cachelume
  *
- * @package Samrat_Website_Cache
+ * @package Cachelume
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class Samrweca_Cache_Handler {
+class Cachelume_Cache_Handler {
 
     /**
      * Cache settings
@@ -27,6 +27,18 @@ class Samrweca_Cache_Handler {
     private $can_cache = false;
 
     /**
+     * Tracking query parameters that don't change page output. They are
+     * stripped from the cache key so tracked links share the normal cached page.
+     *
+     * @var array
+     */
+    private $ignored_query_params = array(
+        'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id',
+        'fbclid', 'gclid', 'gbraid', 'wbraid', 'msclkid', 'dclid',
+        'mc_cid', 'mc_eid', '_ga', '_gl',
+    );
+
+    /**
      * Constructor
      */
     public function __construct() {
@@ -34,7 +46,7 @@ class Samrweca_Cache_Handler {
         
         // Only add cache hooks if page cache is enabled
         if ($this->settings['enable_page_cache']) {
-            // Try to serve cached content early (before WordPress loads)
+            // Try to serve cached content early (on plugins_loaded, before the theme and query run)
             $this->maybe_serve_cached_content();
             
             // Start output buffering after template is loaded
@@ -43,7 +55,13 @@ class Samrweca_Cache_Handler {
 
         // Auto-clear cache hooks
         add_action('save_post', array($this, 'clear_cache_on_update'));
-        add_action('deleted_post', array($this, 'clear_cache_on_update'));
+
+        // Clear the post's current URL before it changes. Unpublishing or changing
+        // the slug changes the permalink, and trashing appends "__trashed" to the
+        // slug, so clearing only after the update would miss the old URL.
+        add_action('pre_post_update', array($this, 'clear_cache_on_update'));
+        add_action('wp_trash_post', array($this, 'clear_cache_on_update'));
+        add_action('before_delete_post', array($this, 'clear_cache_on_update'));
         add_action('switch_theme', array($this, 'clear_all_cache'));
         add_action('activated_plugin', array($this, 'clear_all_cache'));
         add_action('deactivated_plugin', array($this, 'clear_all_cache'));
@@ -52,6 +70,18 @@ class Samrweca_Cache_Handler {
         // WooCommerce specific hooks — these pass WC_Product objects, so use a dedicated handler.
         add_action('woocommerce_product_set_stock', array($this, 'clear_cache_on_wc_stock_update'));
         add_action('woocommerce_variation_set_stock', array($this, 'clear_cache_on_wc_stock_update'));
+
+        // Comment hooks — clear the post's cache when its visible comments change.
+        add_action('comment_post', array($this, 'clear_cache_on_new_comment'), 10, 2);
+        add_action('edit_comment', array($this, 'clear_cache_on_comment_edit'));
+        add_action('transition_comment_status', array($this, 'clear_cache_on_comment_status'), 10, 3);
+
+        // Scheduled cleanup of expired cache files
+        add_action('cachelume_purge_expired', array($this, 'purge_expired_cache'));
+
+        // Settings changes (minification, exclusions, etc.) affect cached output,
+        // so start fresh. Only fires when the saved value actually changed.
+        add_action('update_option_cachelume_settings', array($this, 'clear_all_cache'));
     }
 
     /**
@@ -60,23 +90,14 @@ class Samrweca_Cache_Handler {
      * @return array
      */
     private function get_settings() {
-        $defaults = array(
-            'enable_page_cache' => 1,
-            'cache_logged_users' => 0,
-            'cache_expiry' => 86400,
-            'minify_html' => 0,
-            'minify_css' => 0,
-            'minify_js' => 0,
-            'exclude_pages' => "/cart/\n/checkout/\n/my-account/",
-            'exclude_cookies' => "woocommerce_cart_hash\nwoocommerce_items_in_cart",
-        );
+        $defaults = cachelume_get_default_settings();
 
-        $options = get_option('samrweca_settings', $defaults);
+        $options = get_option('cachelume_settings', $defaults);
         return wp_parse_args($options, $defaults);
     }
 
     /**
-     * Check basic conditions (before WordPress is fully loaded)
+     * Check basic conditions (before the main query runs)
      *
      * @return bool
      */
@@ -116,8 +137,18 @@ class Samrweca_Cache_Handler {
             return false;
         }
 
+        // Don't serve cache for URLs with unrecognized query parameters
+        if (false === $this->get_normalized_request_uri()) {
+            return false;
+        }
+
         // Check excluded cookies
         if ($this->has_excluded_cookie()) {
+            return false;
+        }
+
+        // Don't serve cache to visitors who may see personalized content
+        if ($this->has_private_cookie()) {
             return false;
         }
 
@@ -174,8 +205,19 @@ class Samrweca_Cache_Handler {
             return false;
         }
 
+        // Don't cache URLs with unrecognized query parameters. Arbitrary query
+        // strings would otherwise create a new cache file per unique URL.
+        if (false === $this->get_normalized_request_uri()) {
+            return false;
+        }
+
         // Check excluded cookies
         if ($this->has_excluded_cookie()) {
+            return false;
+        }
+
+        // Don't cache pages that may contain personalized content
+        if ($this->has_private_cookie()) {
             return false;
         }
 
@@ -265,7 +307,27 @@ class Samrweca_Cache_Handler {
     }
 
     /**
-     * Try to serve cached content before WordPress fully loads
+     * Check if the visitor has a cookie that makes WordPress personalize the page.
+     *
+     * wp-postpass_*: visitor has unlocked a password-protected post, so
+     * post_password_required() returns false and the unlocked content renders.
+     * comment_author_*: WordPress pre-fills the comment form with the
+     * commenter's name, email and URL.
+     *
+     * @return bool
+     */
+    private function has_private_cookie() {
+        foreach (array_keys($_COOKIE) as $key) {
+            if (strpos($key, 'wp-postpass_') === 0 || strpos($key, 'comment_author_') === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Try to serve cached content before the theme and main query run
      */
     private function maybe_serve_cached_content() {
         if (!$this->can_serve_cache_early()) {
@@ -297,10 +359,22 @@ class Samrweca_Cache_Handler {
             return;
         }
 
+        // A WordPress nonce may stop validating once it is older than half of
+        // nonce_life (12 hours by default). Pages that embed nonces (forms, AJAX
+        // actions) must not be served past that point, or they fail with
+        // "The link you followed has expired".
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Reading WordPress core's own filter.
+        $nonce_expiry = (int) (apply_filters('nonce_life', DAY_IN_SECONDS) / 2);
+        if ($expiry > $nonce_expiry && (time() - $file_time) > $nonce_expiry && stripos($content, 'nonce') !== false) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+            @unlink($cache_file);
+            return;
+        }
+
         // Set appropriate headers
         header('Content-Type: text/html; charset=UTF-8');
-        header('X-Samrat-Cache: HIT');
-        header('X-Samrat-Cache-Time: ' . gmdate('Y-m-d H:i:s', $file_time));
+        header('X-Cachelume-Cache: HIT');
+        header('X-Cachelume-Cache-Time: ' . gmdate('Y-m-d H:i:s', $file_time));
         
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo $content;
@@ -364,6 +438,13 @@ class Samrweca_Cache_Handler {
 
         // Don't cache error pages
         if (http_response_code() !== 200) {
+            return;
+        }
+
+        // Respect the standard "don't cache this page" signal. WooCommerce, form
+        // plugins and others define it while rendering, so check it here at the
+        // end of the request rather than before output starts.
+        if (defined('DONOTCACHEPAGE') && DONOTCACHEPAGE) {
             return;
         }
 
@@ -431,9 +512,11 @@ class Samrweca_Cache_Handler {
         // Store pre/code/textarea/script/style content
         $protected = array();
         $html = preg_replace_callback(
-            '#(<(?:pre|code|textarea|script|style)[^>]*>)(.*?)(</(?:pre|code|textarea|script|style)>)#si',
+            // The closing tag must match the opening one (\2), so <pre><code>…</code> more</pre>
+            // is protected up to </pre> rather than the first </code>.
+            '#(<(pre|code|textarea|script|style)\b[^>]*>)(.*?)(</\2>)#si',
             function ($matches) use (&$protected) {
-                $key = '<!-- SAMRAT_PROTECTED_' . count($protected) . ' -->';
+                $key = '<!-- CACHELUME_PROTECTED_' . count($protected) . ' -->';
                 $protected[$key] = $matches[0];
                 return $key;
             },
@@ -441,7 +524,7 @@ class Samrweca_Cache_Handler {
         );
 
         // Remove HTML comments (except IE conditionals and protected)
-        $html = preg_replace('/<!--(?!\s*(?:\[if [^\]]+]|<!|>|SAMRAT_PROTECTED))(?:(?!-->).)*-->/s', '', $html);
+        $html = preg_replace('/<!--(?!\s*(?:\[if [^\]]+]|<!|>|CACHELUME_PROTECTED))(?:(?!-->).)*-->/s', '', $html);
         
         // Remove whitespace between tags (be careful with inline elements)
         $html = preg_replace('/>\s+</', '> <', $html);
@@ -469,18 +552,37 @@ class Samrweca_Cache_Handler {
             '#<style[^>]*>(.*?)</style>#si',
             function ($matches) {
                 $css = $matches[1];
-                
-                // Remove comments
-                $css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css);
-                
-                // Remove whitespace
+
+                // Remove comments and protect strings and url() values in a single
+                // left-to-right pass, so a quote inside a comment or a "/*" inside
+                // a string can't be mistaken for the other.
+                $protected = array();
+                $css = preg_replace_callback(
+                    '#/\*.*?\*/|"(?:[^"\\\\]|\\\\.)*"|\'(?:[^\'\\\\]|\\\\.)*\'|url\(\s*[^)"\'\s]*\s*\)#is',
+                    function ($token) use (&$protected) {
+                        if (strpos($token[0], '/*') === 0) {
+                            return '';
+                        }
+                        $key = '___CACHELUME_CSS_' . count($protected) . '___';
+                        $protected[$key] = $token[0];
+                        return $key;
+                    },
+                    $css
+                );
+
+                // Collapse whitespace
                 $css = preg_replace('/\s+/', ' ', $css);
-                
-                // Remove spaces around special characters
-                $css = preg_replace('/\s*([:;{},>+])\s*/', '$1', $css);
-                
+
+                // Remove spaces around characters where they never matter. "+" and
+                // ":" are left alone: calc() requires spaces around "+", and a space
+                // before ":" is a descendant selector (".menu :hover").
+                $css = preg_replace('/\s*([;{},>])\s*/', '$1', $css);
+
                 // Remove trailing semicolons before closing braces
                 $css = preg_replace('/;}/', '}', $css);
+
+                // Restore protected strings and url() values
+                $css = strtr($css, $protected);
                 
                 // Get opening tag
                 preg_match('#<style[^>]*>#i', $matches[0], $tag);
@@ -509,21 +611,25 @@ class Samrweca_Cache_Handler {
                     return $matches[0];
                 }
 
-                // Skip JSON scripts
-                if (preg_match('/type\s*=\s*["\']application\/(?:ld\+)?json["\']/i', $attrs)) {
+                // Skip non-JavaScript scripts (JSON, HTML templates, etc.)
+                if (preg_match('/\btype\s*=\s*["\']?([^"\'\s>]+)/i', $attrs, $type)
+                    && !preg_match('#^(?:text/javascript|application/javascript|module)$#i', $type[1])) {
                     return $matches[0];
                 }
-                
-                // Remove single-line comments (but not URLs)
-                $js = preg_replace('#(?<![:\'"=])//(?![\'"]).*$#m', '', $js);
-                
-                // Remove multi-line comments
-                $js = preg_replace('#/\*.*?\*/#s', '', $js);
-                
-                // Remove excessive whitespace (but be careful with strings)
-                $js = preg_replace('/\s+/', ' ', $js);
-                
-                return '<script' . $attrs . '>' . trim($js) . '</script>';
+
+                // Template literals and backslash-continued strings can span lines,
+                // so their whitespace is part of a string value. Leave them untouched.
+                if (strpos($js, '`') !== false || preg_match('/\\\\\r?\n/', $js)) {
+                    return $matches[0];
+                }
+
+                // Trim each line and drop blank lines. Line breaks are kept because
+                // JavaScript relies on them for automatic semicolon insertion.
+                // Comments are kept because "//" and "/*" can't be told apart from
+                // the same characters inside strings or regexes without a full parser.
+                $lines = array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $js)), 'strlen');
+
+                return '<script' . $attrs . '>' . implode("\n", $lines) . '</script>';
             },
             $html
         );
@@ -535,7 +641,7 @@ class Samrweca_Cache_Handler {
      * @return string
      */
     private function get_cache_signature() {
-        return "\n<!-- Cached by Samrat Website Cache on " . gmdate('Y-m-d H:i:s') . " -->";
+        return "\n<!-- Cached by Cachelume on " . gmdate('Y-m-d H:i:s') . " -->";
     }
 
     /**
@@ -544,7 +650,7 @@ class Samrweca_Cache_Handler {
      * @return string
      */
     private function get_cache_file() {
-        $cache_dir = SAMRWECA_CACHE_DIR;
+        $cache_dir = CACHELUME_CACHE_DIR;
         
         // Create a unique cache key based on URL and user state
         $cache_key = $this->get_cache_key();
@@ -558,26 +664,123 @@ class Samrweca_Cache_Handler {
      * @return string
      */
     private function get_cache_key() {
-        $uri = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
+        $uri = $this->get_normalized_request_uri();
 
         // Use the configured site host rather than the user-supplied HTTP_HOST header.
         // HTTP_HOST is fully attacker-controlled and using it directly would allow
         // cache pollution via forged Host headers (disk exhaustion attack).
         $host = (string) wp_parse_url(home_url(), PHP_URL_HOST);
 
-        $key_parts = array($host, $uri);
-        
-        // Include user state in key if caching for logged-in users
-        if ($this->settings['cache_logged_users']) {
-            foreach (array_keys($_COOKIE) as $key) {
-                if (strpos($key, 'wordpress_logged_in_') === 0) {
-                    $key_parts[] = 'logged_in';
-                    break;
-                }
+        return md5($host . '|' . $uri) . $this->get_user_cache_suffix();
+    }
+
+    /**
+     * Get the current request URI normalized for use in a cache key.
+     *
+     * @return string|false Normalized URI, or false if the request isn't cacheable.
+     */
+    private function get_normalized_request_uri() {
+        $uri = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
+        return $this->normalize_uri($uri);
+    }
+
+    /**
+     * Normalize a URI (path plus optional query string) for use in a cache key.
+     *
+     * Tracking parameters are dropped. The remaining parameters must all be
+     * WordPress core query vars (e.g. ?p=123 on sites with plain permalinks),
+     * otherwise the URI isn't cacheable. Parameters are sorted so the same page
+     * always maps to the same key.
+     *
+     * @param string $uri URI path with optional query string.
+     * @return string|false Normalized URI, or false if it isn't cacheable.
+     */
+    private function normalize_uri($uri) {
+        $parts = explode('?', $uri, 2);
+        $path  = $parts[0];
+
+        if (!isset($parts[1]) || '' === $parts[1]) {
+            return $path;
+        }
+
+        parse_str($parts[1], $query);
+
+        foreach ($this->ignored_query_params as $param) {
+            unset($query[$param]);
+        }
+
+        if (array_diff(array_keys($query), $this->get_core_query_vars())) {
+            return false;
+        }
+
+        foreach ($query as $value) {
+            if (!is_scalar($value)) {
+                return false;
             }
         }
-        
-        return md5(implode('|', $key_parts));
+
+        if (empty($query)) {
+            return $path;
+        }
+
+        ksort($query);
+        return esc_url_raw($path . '?' . http_build_query($query));
+    }
+
+    /**
+     * Get WordPress core's public query vars.
+     *
+     * Uses the core defaults rather than the filtered list so the result is
+     * identical when serving early (plugins_loaded) and when saving the cache.
+     *
+     * @return array
+     */
+    private function get_core_query_vars() {
+        static $vars = null;
+
+        if (null === $vars) {
+            $wp   = new WP();
+            $vars = $wp->public_query_vars;
+        }
+
+        return $vars;
+    }
+
+    /**
+     * Get the per-user cache file suffix for logged-in users.
+     *
+     * Each logged-in user gets their own cache variant so one user's admin bar,
+     * name and role-specific content is never served to another user. The
+     * suffix is a salted hash so cache filenames can't be guessed from a user ID.
+     *
+     * @return string Empty string for logged-out visitors.
+     */
+    private function get_user_cache_suffix() {
+        if (!$this->settings['cache_logged_users']) {
+            return '';
+        }
+
+        $user_id = wp_validate_auth_cookie('', 'logged_in');
+        if (!$user_id) {
+            return '';
+        }
+
+        return '-' . wp_hash('cachelume_user_' . $user_id);
+    }
+
+    /**
+     * Delete the cache files for a URL, including every logged-in user's variant.
+     *
+     * @param string $cache_key Base cache key (md5 of host|uri).
+     */
+    private function delete_cache_files($cache_key) {
+        $files = glob(CACHELUME_CACHE_DIR . $cache_key . '*.html');
+        if ($files) {
+            foreach ($files as $file) {
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+                @unlink($file);
+            }
+        }
     }
 
     /**
@@ -621,26 +824,12 @@ class Samrweca_Cache_Handler {
                 $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
                 $host = isset($parsed['host']) ? $parsed['host'] : wp_parse_url(home_url(), PHP_URL_HOST);
 
-                // Normalise with esc_url_raw() so the key matches what get_cache_key() produces.
-                $normalized_uri = esc_url_raw($uri . $query);
+                // Normalise the same way as get_cache_key() so the keys match.
+                $normalized_uri = $this->normalize_uri(esc_url_raw($uri . $query));
 
-                // Clear non-logged-in cache
-                $cache_key = md5($host . '|' . $normalized_uri);
-                $cache_file = SAMRWECA_CACHE_DIR . $cache_key . '.html';
-
-                if (file_exists($cache_file)) {
-                    // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-                    @unlink($cache_file);
-                }
-
-                // Clear logged-in user cache variant if that feature is enabled
-                if ($this->settings['cache_logged_users']) {
-                    $logged_in_key  = md5($host . '|' . $normalized_uri . '|logged_in');
-                    $logged_in_file = SAMRWECA_CACHE_DIR . $logged_in_key . '.html';
-                    if (file_exists($logged_in_file)) {
-                        // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-                        @unlink($logged_in_file);
-                    }
+                // Clear logged-out cache and every logged-in user's variant
+                if (false !== $normalized_uri) {
+                    $this->delete_cache_files(md5($host . '|' . $normalized_uri));
                 }
             }
         }
@@ -650,21 +839,74 @@ class Samrweca_Cache_Handler {
         $parsed = wp_parse_url($home_url);
         $host = isset($parsed['host']) ? $parsed['host'] : '';
 
-        $home_cache_key = md5($host . '|/');
-        $home_cache_file = SAMRWECA_CACHE_DIR . $home_cache_key . '.html';
+        $this->delete_cache_files(md5($host . '|/'));
+    }
 
-        if (file_exists($home_cache_file)) {
-            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-            @unlink($home_cache_file);
+    /**
+     * Clear cache when a new comment is published.
+     *
+     * @param int        $comment_id       Comment ID.
+     * @param int|string $comment_approved 1 if approved, 0 if pending, 'spam' if spam.
+     */
+    public function clear_cache_on_new_comment($comment_id, $comment_approved) {
+        // Pending and spam comments aren't shown, so the page hasn't changed.
+        if (1 !== (int) $comment_approved) {
+            return;
         }
 
-        // Clear logged-in homepage cache variant if that feature is enabled
-        if ($this->settings['cache_logged_users']) {
-            $home_logged_in_key  = md5($host . '|/|logged_in');
-            $home_logged_in_file = SAMRWECA_CACHE_DIR . $home_logged_in_key . '.html';
-            if (file_exists($home_logged_in_file)) {
+        $comment = get_comment($comment_id);
+        if ($comment) {
+            $this->clear_cache_on_update($comment->comment_post_ID);
+        }
+    }
+
+    /**
+     * Clear cache when a published comment is edited.
+     *
+     * @param int $comment_id Comment ID.
+     */
+    public function clear_cache_on_comment_edit($comment_id) {
+        $comment = get_comment($comment_id);
+        if ($comment && '1' === (string) $comment->comment_approved) {
+            $this->clear_cache_on_update($comment->comment_post_ID);
+        }
+    }
+
+    /**
+     * Clear cache when a comment is approved, unapproved, spammed, trashed or deleted.
+     *
+     * @param string     $new_status New comment status.
+     * @param string     $old_status Old comment status.
+     * @param WP_Comment $comment    Comment object.
+     */
+    public function clear_cache_on_comment_status($new_status, $old_status, $comment) {
+        // Only changes to or from "approved" affect what visitors see.
+        if ($new_status === $old_status || ('approved' !== $new_status && 'approved' !== $old_status)) {
+            return;
+        }
+
+        $this->clear_cache_on_update($comment->comment_post_ID);
+    }
+
+    /**
+     * Delete cache files older than the configured cache expiry.
+     *
+     * Runs daily via WP-Cron. Expired files are otherwise only deleted when
+     * the same URL is requested again, so without this they build up.
+     */
+    public function purge_expired_cache() {
+        $files = glob(CACHELUME_CACHE_DIR . '*.html');
+        if (!$files) {
+            return;
+        }
+
+        $expiry = intval($this->settings['cache_expiry']);
+        $now    = time();
+
+        foreach ($files as $file) {
+            if (is_file($file) && ($now - filemtime($file)) > $expiry) {
                 // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-                @unlink($home_logged_in_file);
+                @unlink($file);
             }
         }
     }
@@ -673,7 +915,7 @@ class Samrweca_Cache_Handler {
      * Clear all cache files
      */
     public function clear_all_cache() {
-        $cache_dir = SAMRWECA_CACHE_DIR;
+        $cache_dir = CACHELUME_CACHE_DIR;
         
         if (!file_exists($cache_dir)) {
             return;

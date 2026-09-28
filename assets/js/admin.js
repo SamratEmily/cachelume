@@ -1,7 +1,7 @@
 /**
- * Samrat Website Cache - Admin JavaScript
+ * Cachelume - Admin JavaScript
  *
- * @package Samrat_Website_Cache
+ * @package Cachelume
  */
 
 (function ($) {
@@ -12,12 +12,12 @@
      */
     function showToast(message, type) {
         // Remove existing toast
-        $('.samrat-cache-toast').remove();
+        $('.cachelume-cache-toast').remove();
 
         var iconClass = type === 'success' ? 'yes-alt' : 'warning';
 
         // Build DOM nodes instead of concatenating HTML to prevent XSS
-        var $toast = $('<div>').addClass('samrat-cache-toast ' + type);
+        var $toast = $('<div>').addClass('cachelume-cache-toast ' + type);
         $toast.append($('<span>').addClass('dashicons dashicons-' + iconClass));
         $toast.append($('<span>').text(message)); // .text() escapes the message safely
 
@@ -43,23 +43,23 @@
         var originalText = $button.html();
         $button.addClass('loading');
         $button.html(
-            '<span class="dashicons dashicons-update samrweca-spin"></span> ' +
-            samrwecaCache.clearingText
+            '<span class="dashicons dashicons-update cachelume-spin"></span> ' +
+            cachelumeCache.clearingText
         );
 
         $.ajax({
-            url: samrwecaCache.ajaxUrl,
+            url: cachelumeCache.ajaxUrl,
             type: 'POST',
             data: {
-                action: 'samrweca_clear_cache',
-                nonce: samrwecaCache.nonce
+                action: 'cachelume_clear_cache',
+                nonce: cachelumeCache.nonce
             },
             success: function (response) {
                 if (response.success) {
                     $button.removeClass('loading').addClass('success');
                     $button.html(
                         '<span class="dashicons dashicons-yes-alt"></span> ' +
-                        samrwecaCache.clearedText
+                        cachelumeCache.clearedText
                     );
                     showToast(response.data.message, 'success');
 
@@ -74,13 +74,13 @@
                 } else {
                     $button.removeClass('loading');
                     $button.html(originalText);
-                    showToast(response.data.message || samrwecaCache.errorText, 'error');
+                    showToast(response.data.message || cachelumeCache.errorText, 'error');
                 }
             },
             error: function () {
                 $button.removeClass('loading');
                 $button.html(originalText);
-                showToast(samrwecaCache.errorText, 'error');
+                showToast(cachelumeCache.errorText, 'error');
             }
         });
     }
@@ -90,7 +90,7 @@
      */
     function updateCacheStats() {
         // Update cached pages count to 0
-        var statCards = $('.samrat-cache-stat-card');
+        var statCards = $('.cachelume-cache-stat-card');
         if (statCards.length > 0) {
             statCards.eq(0).find('.stat-value').text('0');
             statCards.eq(1).find('.stat-value').text('0 B');
@@ -102,19 +102,19 @@
      */
     $(document).ready(function () {
         // Clear cache button on settings page
-        $('#samrat-clear-all-cache').on('click', function (e) {
+        $('#cachelume-clear-all-cache').on('click', function (e) {
             e.preventDefault();
             clearCache($(this));
         });
 
         // Clear cache button on clear cache page
-        $('#samrat-clear-all-cache-page').on('click', function (e) {
+        $('#cachelume-clear-all-cache-page').on('click', function (e) {
             e.preventDefault();
             clearCache($(this));
         });
 
         // Add hover effect to stat cards
-        $('.samrat-cache-stat-card').on('mouseenter', function () {
+        $('.cachelume-cache-stat-card').on('mouseenter', function () {
             $(this).css('transform', 'translateY(-4px)');
         }).on('mouseleave', function () {
             $(this).css('transform', 'translateY(0)');
@@ -124,23 +124,23 @@
     /**
      * Global function for admin bar
      */
-    window.samrwecaClearCacheFromBar = function () {
+    window.cachelumeClearCacheFromBar = function () {
         $.ajax({
-            url: samrwecaCache.ajaxUrl,
+            url: cachelumeCache.ajaxUrl,
             type: 'POST',
             data: {
-                action: 'samrweca_clear_cache',
-                nonce: samrwecaCache.nonce
+                action: 'cachelume_clear_cache',
+                nonce: cachelumeCache.nonce
             },
             success: function (response) {
                 if (response.success) {
                     showToast(response.data.message, 'success');
                 } else {
-                    showToast(response.data.message || samrwecaCache.errorText, 'error');
+                    showToast(response.data.message || cachelumeCache.errorText, 'error');
                 }
             },
             error: function () {
-                showToast(samrwecaCache.errorText, 'error');
+                showToast(cachelumeCache.errorText, 'error');
             }
         });
     };
