@@ -9,22 +9,22 @@ A powerful and lightweight caching plugin for WordPress that dramatically improv
 
 ![Cachelume Banner](assets/images/banner-772x250.png)
 
-## ✨ Features
+## Features
 
-### 🚀 Page Caching
+### Page Caching
 - Stores rendered pages as static HTML files
 - Serves cached content early, before the theme and database queries run
 - Configurable cache expiry from 1 hour to 1 week
 - Automatic cache invalidation on content updates
 - Daily background cleanup of expired cache files
 
-### 📦 Minification
+### Minification
 - **HTML Minification** - Removes unnecessary whitespace and comments
 - **CSS Minification** - Minifies inline `<style>` blocks
 - **JavaScript Minification** - Trims whitespace in inline `<script>` blocks (line breaks and comments are kept so scripts can't break)
 - Safe minification that preserves `<pre>`, `<code>`, and `<textarea>` content
 
-### ⚙️ Smart Exclusions
+### Smart Exclusions
 - Exclude specific URLs with wildcard support
 - Cookie-based exclusions (great for WooCommerce)
 - Automatic exclusions for:
@@ -39,25 +39,25 @@ A powerful and lightweight caching plugin for WordPress that dramatically improv
   - Pages that define `DONOTCACHEPAGE`
   - URLs with query parameters other than WordPress core query vars (tracking parameters such as `utm_*` and `fbclid` are ignored)
 
-### 🛒 WooCommerce Compatible
+### WooCommerce Compatible
 Pre-configured exclusions for:
 - `/cart/`
 - `/checkout/`
 - `/my-account/`
 - Cart cookies (prevents caching when items in cart)
 
-### 🎨 Modern Admin Interface
+### Modern Admin Interface
 - Beautiful, responsive settings page
 - Real-time cache statistics
 - One-click cache clearing
 - Admin bar integration for quick access
 
-## 📋 Requirements
+## Requirements
 
 - WordPress 5.0 or higher
 - PHP 7.4 or higher
 
-## 🔧 Installation
+## Installation
 
 ### From WordPress Admin
 
@@ -73,7 +73,7 @@ Pre-configured exclusions for:
 3. Activate through the **Plugins** menu
 4. Configure at **Cachelume → Settings**
 
-## ⚡ Quick Start
+## Quick Start
 
 The plugin works out of the box with sensible defaults:
 
@@ -88,7 +88,7 @@ The plugin works out of the box with sensible defaults:
 
 For most websites, simply activate and you're done!
 
-## 🎯 Configuration
+## Configuration
 
 ### Page Cache Settings
 
@@ -124,7 +124,7 @@ woocommerce_items_in_cart
 custom_session_cookie
 ```
 
-## 🔍 Verifying Cache is Working
+## Verifying Cache is Working
 
 ### Method 1: View Page Source
 Look for this comment at the bottom of your HTML (timestamp is in UTC):
@@ -145,7 +145,7 @@ Visit **Cachelume → Settings** to see:
 - Total cache size
 - Cache status (Active/Inactive)
 
-## 🗑️ Clearing Cache
+## Clearing Cache
 
 ### Manual Clear
 1. **Settings Page** - Click "Clear All Cache" button
@@ -162,7 +162,7 @@ Cache automatically clears when:
 - WordPress core is updated
 - WooCommerce stock changes
 
-## 📁 File Structure
+## File Structure
 
 ```
 cachelume/
@@ -186,7 +186,7 @@ cachelume/
 
 Cached pages are stored outside the plugin in `wp-content/cache/cachelume/`.
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Pages not being cached
 
@@ -219,7 +219,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the GPLv2 or later - see the [GNU GPL v2](https://www.gnu.org/licenses/gpl-2.0.html) for details.
 
@@ -230,7 +230,7 @@ This project is licensed under the GPLv2 or later - see the [GNU GPL v2](https:/
 - Website: [samratemily.netlify.app](https://samratemily.netlify.app/)
 - GitHub: [@samrathossen](https://github.com/samrathossen)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - WordPress Plugin Development Team
 - The WordPress community for continuous support and feedback
