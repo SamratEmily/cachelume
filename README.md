@@ -16,6 +16,7 @@ A powerful and lightweight caching plugin for WordPress that dramatically improv
 - Serves cached content early, before the theme and database queries run
 - Configurable cache expiry from 1 hour to 1 week
 - Automatic cache invalidation on content updates
+- Daily background cleanup of expired cache files
 
 ### 📦 Minification
 - **HTML Minification** - Removes unnecessary whitespace and comments
@@ -126,12 +127,13 @@ custom_session_cookie
 ## 🔍 Verifying Cache is Working
 
 ### Method 1: View Page Source
-Look for this comment at the bottom of your HTML:
+Look for this comment at the bottom of your HTML (timestamp is in UTC):
 ```html
 <!-- Cached by Cachelume on 2024-01-15 10:30:00 -->
 ```
 
 ### Method 2: Check Response Headers
+Cached responses include these headers (timestamp in UTC):
 ```
 X-Cachelume-Cache: HIT
 X-Cachelume-Cache-Time: 2024-01-15 10:30:00
@@ -166,12 +168,16 @@ Cache automatically clears when:
 cachelume/
 ├── assets/
 │   ├── css/
-│   │   └── admin.css          # Admin styles
+│   │   └── admin.css           # Admin styles
+│   ├── images/
+│   │   ├── banner-772x250.png  # WordPress.org banner
+│   │   └── icon-256x256.png    # WordPress.org icon
 │   └── js/
-│       └── admin.js           # Admin JavaScript
+│       └── admin.js            # Admin JavaScript
 ├── includes/
-│   ├── AdminMenu.php          # Admin menu & settings
-│   └── CacheHandler.php       # Core caching logic
+│   ├── AdminMenu.php           # Admin menu & settings
+│   └── CacheHandler.php        # Core caching logic
+├── index.php                   # Prevents directory listing
 ├── README.md                   # This file
 ├── readme.txt                  # WordPress.org readme
 ├── uninstall.php               # Removes settings and cache on delete
@@ -199,7 +205,7 @@ Cached pages are stored outside the plugin in `wp-content/cache/cachelume/`.
 
 ### Cache not clearing
 
-1. Check file permissions on `/cache/` directory
+1. Check file permissions on the `wp-content/cache/cachelume/` directory
 2. Ensure WordPress has write access
 3. Try clearing manually via FTP/file manager
 
@@ -215,13 +221,13 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-This project is licensed under the GPLv2 or later - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GPLv2 or later - see the [GNU GPL v2](https://www.gnu.org/licenses/gpl-2.0.html) for details.
 
 ## 👨‍💻 Author
 
 **Samrat Hossen**
 
-- Website: [samrat-personal-portfolio.netlify.app](https://samrat-personal-portfolio.netlify.app/)
+- Website: [samratemily.netlify.app](https://samratemily.netlify.app/)
 - GitHub: [@samrathossen](https://github.com/samrathossen)
 
 ## 🙏 Acknowledgments
